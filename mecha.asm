@@ -111,6 +111,8 @@ tank_cd3        ds 1
 tank_turn_timer_lo ds 1
 tank_turn_timer_hi ds 1
 ; Off-map countdown state and game-over latch.
+tank_turn_timer_lo ds 1
+tank_turn_timer_hi ds 1
 offmap_flag     ds 1
 offmap_sec_tick ds 1
 offmap_seconds  ds 1
@@ -1459,6 +1461,9 @@ OffmapBarTable
         .byte 0,2,3,5,6,8,10,11,13,14,16
 
 ; LIDAR charge rate by approximate distance (0..16).
+OffmapBarTable
+        .byte 0,2,3,5,6,8,10,11,13,14,16
+
 LidarRateTable
         .byte 0,14,12,10,8,7,6,5,4,4,3,3,2,2,2,1,1
 
