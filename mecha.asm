@@ -93,10 +93,12 @@ dir_to_player   ds 1
 tmp_abs_dx      ds 1
 tmp_abs_dy      ds 1
 tmp_dist        ds 1
+; LIDAR accumulation and bar fill state.
 lidar_accum     ds 1
 lidar_bar       ds 1
 lidar_rate_sum  ds 1
 lidar_any       ds 1
+; Per-tank LIDAR activity and cooldown flags.
 tank_lidar0     ds 1
 tank_lidar1     ds 1
 tank_lidar2     ds 1
@@ -105,6 +107,10 @@ tank_cd0        ds 1
 tank_cd1        ds 1
 tank_cd2        ds 1
 tank_cd3        ds 1
+; Slow rotation timer for tanks (16-bit countdown).
+tank_turn_timer_lo ds 1
+tank_turn_timer_hi ds 1
+; Off-map countdown state and game-over latch.
 tank_turn_timer_lo ds 1
 tank_turn_timer_hi ds 1
 offmap_flag     ds 1
@@ -768,6 +774,7 @@ UpdateTanks
 .use_dx
         sta tmp_dist
 
+        ; Check if player is in the tank's forward 45-degree arc.
         jsr DirFromDelta
         sta dir_to_player
         lda TankDir,x
@@ -1449,6 +1456,11 @@ HumFreqTable
         include "map.asm"
 
 ; Projection and direction tables used by logic.
+; Countdown bar fill levels for off-map timer (0-10 seconds).
+OffmapBarTable
+        .byte 0,2,3,5,6,8,10,11,13,14,16
+
+; LIDAR charge rate by approximate distance (0..16).
 OffmapBarTable
         .byte 0,2,3,5,6,8,10,11,13,14,16
 
