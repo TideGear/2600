@@ -1,7 +1,7 @@
 # Atari 2600 Mecha Simulator
 
-This project is a **real Atari 2600** (4K) assembly game that simulates a
-first-person mecha cockpit view inspired by *Star Raiders*. It is designed to
+This project is a **real Atari 2600** (16K) assembly game that simulates a
+first-person mecha cockpit view inspired by *Robot Tank*. It is designed to
 assemble with DASM and run on actual 2600 hardware or accurate emulators.
 
 ## Core View & Cockpit
@@ -26,14 +26,15 @@ assemble with DASM and run on actual 2600 hardware or accurate emulators.
   - `R2`, `R1` = reverse (slow/fast).
   - `N` = neutral (no movement).
   - `1`, `2`, `3` = forward speeds.
-- **Turning** changes the direction of travel (leg heading).
-- **Torso twist** changes only the view (cockpit heading), not movement.
+- **Turning** changes the direction of travel (leg heading). It takes 4 seconds for a full 360 degree turn.
+- **Torso twist** changes only the view (cockpit heading), not movement. Torso turning is limited to 90 degrees left or right. Torso turning is twice as fast as leg turning.
 
 ### Ground Motion
 
 - The ground is rendered with moving dirt/rock pixels.
 - Motion scrolls and shifts based on **leg heading**, while the **camera
   perspective** responds to torso twist for spatial realism.
+- Turning is represented by a horizon with mountains and clouds.
 
 ### Bobbing & Footfalls
 
@@ -55,8 +56,8 @@ assemble with DASM and run on actual 2600 hardware or accurate emulators.
 
 ## Tanks & World Model
 
-- The world uses a **32x32 grid** with the player and four enemy tanks.
-- The map does **not wrap**: leaving the map starts a 10-second countdown.
+- The world uses a **16x8 grid** with the player and four enemy tanks.
+- The map does **not wrap**: leaving the map starts a visible 10-second countdown.
   - If the countdown reaches 0, the game is lost.
 - Tanks **slowly rotate** in place:
   - One full 360° rotation takes ~1 minute.
@@ -84,13 +85,13 @@ assemble with DASM and run on actual 2600 hardware or accurate emulators.
 
 - Double-tap the button to toggle pause.
 - Paused view shows:
-  - Black background with blue `PAUSE` text.
-  - A **centered 32x32 map**.
+  - Black background.
+  - A **centered 16x8 map**.
   - The player and tanks with facing indicators.
   - Tanks flash red on the map when LIDARing.
 
 ## Off-Map Countdown
 
-- Leaving the 32x32 map starts a **10-second countdown**.
+- Leaving the 16x8 map starts a **10-second countdown**.
 - A bar below the compass displays the countdown progress.
 - If it reaches 0, the game is lost.
