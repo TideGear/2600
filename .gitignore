@@ -1,0 +1,12 @@
+# Build outputs
+build/
+
+# Tool outputs
+*.lst
+*.sym
+
+# OS/editor noise
+Thumbs.db
+.DS_Store
+.vscode/
+

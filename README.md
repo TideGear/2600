@@ -8,6 +8,8 @@ assemble with DASM and run on actual 2600 hardware or accurate emulators.
 
 - **First-person cockpit view** with a centered crosshair.
 - **Heading strip** across the top with N/NE/E/SE/S/SW/W/NW markers.
+  - Implemented as a **scrolling heading tape**: the **centered marker** is the current **view heading** (legs + torso).
+  - A small **dot under the tape** indicates the **leg heading** (movement direction) and stays under the same world direction while the torso twists.
 - **Cockpit UI** at the bottom with a gear selector: `R2, R1, N, 1, 2, 3`.
   - Neutral (`N`) is the starting gear and is boxed.
   - The box moves as gears change.
@@ -18,12 +20,13 @@ assemble with DASM and run on actual 2600 hardware or accurate emulators.
 - **Left/Right on joystick**:
   - Normal: turn the legs (movement direction).
   - **Hold joystick button**: twist the cockpit/torso up to 90° left/right.
+  - Releasing the button **returns the torso to center**.
 - **Button double-tap**: toggle pause.
 
 ## Movement & Gearing
 
 - Gears represent forward/backward movement and speed:
-  - `R2`, `R1` = reverse (slow/fast).
+  - `R2`, `R1` = reverse (R2 fast/R1 slow).
   - `N` = neutral (no movement).
   - `1`, `2`, `3` = forward speeds.
 - **Turning** changes the direction of travel (leg heading). It takes 4 seconds for a full 360 degree turn.
@@ -35,6 +38,7 @@ assemble with DASM and run on actual 2600 hardware or accurate emulators.
 - Motion scrolls and shifts based on **leg heading**, while the **camera
   perspective** responds to torso twist for spatial realism.
 - Turning is represented by a horizon with mountains and clouds.
+  - Mountains/clouds shift **smoothly with the view heading** to convey turning and torso twist.
 
 ### Bobbing & Footfalls
 
@@ -95,3 +99,49 @@ assemble with DASM and run on actual 2600 hardware or accurate emulators.
 - Leaving the 16x8 map starts a **10-second countdown**.
 - A bar below the compass displays the countdown progress.
 - If it reaches 0, the game is lost.
+
+## Build & Run (Windows / PowerShell)
+
+### Prereqs
+
+- **DASM** in `PATH` (this repo assembles with DASM 2.20+).
+- **Python 3** (used for table generation + ROM sanity checks).
+- Optional: **Stella** (recommended for debugging).
+
+### Build
+
+From the repo root:
+
+```powershell
+.\tools\build.ps1
+```
+
+Outputs:
+
+- `build\mecha.bin` (16K ROM)
+- `build\mecha.lst` (listing)
+- `build\mecha.sym` (symbols)
+
+### Sanity-check the ROM
+
+```powershell
+python .\tools\check_rom.py
+```
+
+### Run in Stella
+
+Open `build\mecha.bin` in Stella, or:
+
+```powershell
+& "C:\path\to\Stella.exe" .\build\mecha.bin
+```
+
+## Kernel Stability Checklist (NTSC)
+
+- **262 scanlines per frame** is non-negotiable.
+- **Visible region is exactly 192 scanlines** and uses `WSYNC`-aligned scanlines.
+- Playfield is rendered with a **cycle-exact asymmetric kernel**:
+  - Left PF registers are written early in the scanline.
+  - Right PF registers are written later (mid-scanline) to avoid a doubled/mirrored playfield.
+- Keep all visible-kernel tables in the **same bank** as the visible kernel (avoid mid-frame bankswitching).
+- If you touch the kernel, validate in a cycle-accurate emulator (Stella) before adding gameplay features.
